@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-# Listmonk production setup using `docker compose`.
+# Listmonk production setup using `docker-compose`.
 # See https://listmonk.app/docs/installation/ for detailed installation steps.
 
 printf '\n'
@@ -39,7 +39,7 @@ check_dependencies() {
 	fi
 
 	if ! exists docker compose; then
-		error "docker compose is not installed."
+		error "docker-compose is not installed."
 		exit 1
 	fi
 }
@@ -47,7 +47,7 @@ check_dependencies() {
 check_existing_db_volume() {
 	info "checking for an existing docker db volume"
 	if docker volume inspect listmonk_listmonk-data >/dev/null 2>&1; then
-		error "listmonk-data volume already exists. Please use docker compose down -v to remove old volumes for a fresh setup of PostgreSQL."
+		error "listmonk-data volume already exists. Please use docker-compose down -v to remove old volumes for a fresh setup of PostgreSQL."
 		exit 1
 	fi
 }
@@ -86,8 +86,8 @@ get_config() {
 }
 
 get_containers() {
-	info "fetching docker compose.yml from listmonk repo"
-	download https://raw.githubusercontent.com/knadh/listmonk/master/docker compose.yml docker compose.yml
+	info "fetching docker-compose.yml from listmonk repo"
+	download https://raw.githubusercontent.com/knadh/listmonk/master/docker-compose.yml docker-compose.yml
 }
 
 modify_config(){
@@ -103,8 +103,8 @@ modify_config(){
 	# Replace `app.address=localhost:9000` with `app.address=0.0.0.0:9000` in config file.
 	sed -i "s/address = \"localhost:9000\"/address = \"0.0.0.0:9000\"/g" config.toml
 
-	info "modifying docker compose.yml"
-	sed -i "s/POSTGRES_PASSWORD=listmonk/POSTGRES_PASSWORD=$db_password/g" docker compose.yml
+	info "modifying docker-compose.yml"
+	sed -i "s/POSTGRES_PASSWORD=listmonk/POSTGRES_PASSWORD=$db_password/g" docker-compose.yml
 }
 
 run_migrations(){
